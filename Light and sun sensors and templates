@@ -1,0 +1,14 @@
+#Display Tado's Sun sensor. |int (integer) removes the decimal
+{{ states("sensor.casa_solar_percentage")|int }} 
+
+#Max number between Tado's sun sensor (0-100) and 20. i.e. Tado's sun sensor but a minimum of 20.
+{{ max([states("sensor.casa_solar_percentage")|int , 20])}}
+
+#Tado's sun sensor, with a minimum of 20 and max of 100 (not needed in this case, as the sun never goes over 100(%)
+{{ max([ min([states("sensor.casa_solar_percentage")|int, 100]) , 20])}}
+
+# A different way: 'between the sun and 100, take the min. Then, between that and 20, take the max'
+{{ [ [states("sensor.casa_solar_percentage")|int, 100] | min, 20] | max }}
+
+# For the illuminance sensor, which ranges 10-1000 lux. Divide by 100 (result range = 0.1-100), and take the result with a minimum of 20.
+{{ [ [states("sensor.estimated_illuminance_native")|float / 100, 100] | min, 20] | max }}
