@@ -1,0 +1,55 @@
+blueprint:
+  name: Z2M - Aqara D1 Wireless Remote Switch (Single)
+  domain: automation
+  input:
+    remote:
+      name: Remote
+      description: Zigbee2mqtt Action Sensor
+      selector:
+        entity:
+          integration: mqtt
+          domain: sensor
+    condition:
+      name: Condition
+      description: Condition to test before handling a button press
+      default: []
+      selector:
+        action:
+    single:
+      name: Single
+      default: []
+      selector:
+        action:
+    double:
+      name: Double
+      default: []
+      selector:
+        action:
+    hold:
+      name:  Hold
+      default: []
+      selector:
+        action:
+
+mode: restart
+max_exceeded: silent
+
+trigger:
+  platform: state
+  entity_id: !input remote
+  attribute: action
+
+condition: !input condition
+
+action:
+  - variables:
+      command: "{{ trigger.to_state.state }}"
+  - choose:
+      - conditions: "{{ command == 'single' }}"
+        sequence: !input single
+
+      - conditions: "{{ command == 'double' }}"
+        sequence: !input double
+
+      - conditions: "{{ command == 'hold' }}"
+        sequence: !input hold
